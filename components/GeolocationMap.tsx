@@ -66,7 +66,7 @@ const GeolocationMap = () => {
                 {markers.map(marker => (
                     <Marker
                         key={marker.id}
-                        position={[marker.lat.toNumber(), marker.lng.toNumber()]}
+                        position={[marker.lat, marker.lng]}
                         icon={Pin}
                     >
                         <Popup maxHeight={300} minWidth={450}>
