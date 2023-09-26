@@ -14,13 +14,17 @@ const Location = ({ id }: Props) => {
     const [events, setEvents] = useState<EventFull[]>([])
 
 
+    console.log(id);
     useEffect(() => {
+    console.log(id);
         axios.post<{ locationsWithTypes: LocationWithTypes }>('/api/getLocation', {
             id: id
         }).then(res => {
             console.log(res.data.locationsWithTypes);
             
             setLocation(res.data.locationsWithTypes)
+        }).catch(e => {
+            console.log(e);
         })
 
         axios.post<{ eventsFull: EventFull[] }>('/api/getEventsAtLocation', {
@@ -28,7 +32,7 @@ const Location = ({ id }: Props) => {
         }).then(res => {
             setEvents(res.data.eventsFull)
         })
-    }, [])
+    }, [id])
 
 
     return (
