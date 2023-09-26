@@ -1,6 +1,5 @@
 import Head from "next/head";
 import Link from "next/link";
-import React, { useState } from "react";
 import NoSSRWrapper from "components/NoSSRWrapper";
 import GeolocationMap from "../../components/GeolocationMap";
 import dynamic from 'next/dynamic'
