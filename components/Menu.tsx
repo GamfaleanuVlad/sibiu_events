@@ -12,51 +12,34 @@ import PersonAdd from '@mui/icons-material/PersonAdd';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import EventCard from './EventCard';
+import { useRouter } from 'next/router';
 
 export default function AccountMenu() {
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
 
-    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+  const router = useRouter();
 
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
-    const goHome = () => {
-        window.location.href = "/"
-    };
-    const findEvent = () => {
-        // window.location.href = "/"
-    };
-    const createEvent = () => {
-        window.location.href = "/create_event"
-    };
-    const createReview = () => {
-        window.location.href = "/create_review"
-    };
-    const report = () => {
-        window.location.href = "/report"
-    };
-    const askForSupport = () => {
-        window.location.href = "/support"
-    };
-    const findAdditionalInfo = () => {
-        window.location.href = "/about"
-    };
-    return (
-        <React.Fragment>
-            <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-                <MenuItem onClick={goHome}>Map</MenuItem>
-                <MenuItem onClick={findEvent}>Find event</MenuItem>
-                <MenuItem onClick={createEvent}>Create event</MenuItem>
-                <MenuItem onClick={createReview}>Review</MenuItem>
-                <MenuItem onClick={report}>Report</MenuItem>
-                <MenuItem onClick={askForSupport}>Support</MenuItem>
-                <MenuItem onClick={findAdditionalInfo}>About</MenuItem>
-            </Box>
-        </React.Fragment>
-    );
+  return (
+    <>
+      <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+        <MenuItem onClick={() => void router.push("/")}>Map</MenuItem>
+        <MenuItem onClick={() => void router.push("/find_event")}>Find event</MenuItem>
+        <MenuItem onClick={() => void router.push("/create_event")}>Create event</MenuItem>
+        <MenuItem onClick={() => void router.push("/create_review")}>Review</MenuItem>
+        <MenuItem onClick={() => void router.push("/report")}>Report</MenuItem>
+        <MenuItem onClick={() => void router.push("/support")}>Support</MenuItem>
+        <MenuItem onClick={() => void router.push("/about")}>About</MenuItem>
+      </Box>
+    </>
+  );
 }
+
