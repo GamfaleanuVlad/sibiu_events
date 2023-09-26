@@ -107,9 +107,8 @@ model Event {
     id      String   @id @default(cuid())
     name    String
     date    DateTime
-    minPers Int
-    max     Int
-    price   Decimal
+    maxPers Int
+    price   Float
 
     location   Location @relation(fields: [locationId], references: [id])
     creator    User     @relation(fields: [userId], references: [id])
