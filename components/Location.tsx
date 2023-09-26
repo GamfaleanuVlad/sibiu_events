@@ -1,39 +1,10 @@
-import React, { useEffect, useState } from 'react'
 import EventCard from './EventCard'
 import LocationCard from './LocationCard'
-import { EventFull, LocationWithTypes } from '~/types'
-import axios from 'axios'
-
-interface Props {
-    id: string
-}
-
-const Location = ({ id }: Props) => {
-
-    const [location, setLocation] = useState<LocationWithTypes>({} as LocationWithTypes)
-    const [events, setEvents] = useState<EventFull[]>([])
+import {  LocationFull } from '~/types'
 
 
-    console.log(id);
-    useEffect(() => {
-    console.log(id);
-        axios.post<{ locationsWithTypes: LocationWithTypes }>('/api/getLocation', {
-            id: id
-        }).then(res => {
-            console.log(res.data.locationsWithTypes);
-            
-            setLocation(res.data.locationsWithTypes)
-        }).catch(e => {
-            console.log(e);
-        })
 
-        axios.post<{ eventsFull: EventFull[] }>('/api/getEventsAtLocation', {
-            locationId: id
-        }).then(res => {
-            setEvents(res.data.eventsFull)
-        })
-    }, [id])
-
+const Location = ({ location }: {location: LocationFull}) => {
 
     return (
         <div style={{
@@ -47,7 +18,7 @@ const Location = ({ id }: Props) => {
         }}>
             <LocationCard location={location} />
             {
-                events.map(event => (
+                location.Event.map(event => (
                     <EventCard key={event.id} event={event} />
                 ))
             }

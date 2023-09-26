@@ -14,7 +14,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { EventFull } from '~/types';
+import { EventFull, EventSimple } from '~/types';
 
 interface ExpandMoreProps extends IconButtonProps {
     expand: boolean;
@@ -31,13 +31,13 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
     }),
 }));
 
-export default function EventCard({event} : {event: EventFull}) {
+export default function EventCard({ event }: { event: EventFull }) {
     const [expanded, setExpanded] = React.useState(false);
 
     const handleExpandClick = () => {
         setExpanded(!expanded);
     };
-``
+
     return (
         <Card sx={{ maxWidth: 400, width: 400, boxShadow: 3 }}>
             <CardHeader
@@ -51,8 +51,8 @@ export default function EventCard({event} : {event: EventFull}) {
                         <MoreVertIcon />
                     </IconButton>
                 }
-                title="Fotbal"
-                subheader="September 14, 2016"
+                title={event.name}
+                subheader={event.location.address}
             />
 
             <CardContent>

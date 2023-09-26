@@ -7,7 +7,7 @@ import iconRetina from "leaflet/dist/images/marker-icon-2x.png"
 import iconUrl from "leaflet/dist/images/marker-icon.png"
 import iconShadow from "leaflet/dist/images/marker-shadow.png"
 import Location from './Location';
-import { LocationWithTypes } from '~/types';
+import { LocationFull } from '~/types';
 import axios from 'axios';
 
 
@@ -16,24 +16,41 @@ export interface GeolocationBiref {
     setCoordonates?: (lat: number, lng: number) => void
 }
 
+const RegisteredLocations = ({locations} : {locations: LocationFull[]}) => {
+    const Pin = L.icon({
+        iconRetinaUrl: iconRetina.src,
+        iconUrl: iconUrl.src,
+        shadowUrl: iconShadow.src,
+        iconAnchor: [12, 40]
+    });
 
-const Pin = L.icon({
-    iconRetinaUrl: iconRetina.src,
-    iconUrl: iconUrl.src,
-    shadowUrl: iconShadow.src,
-    iconAnchor: [12, 40]
-});
+    return (
+        <>
+            {locations.map(location => (
+                <Marker
+                    key={location.id}
+                    position={[location.lat, location.long]}
+                    icon={Pin}
+                >
+                    <Popup maxHeight={300} minWidth={450}>
+                        <Location location={location} />
+                    </Popup>
+                </Marker>
+            ))}
+        </>
+    )
+}
 
 const GeolocationMap = () => {
     const [latitude, setLatitude] = useState<number | null>(null);
     const [longitude, setLongitude] = useState<number | null>(null);
 
-    const [locations, setLocations] = useState<LocationWithTypes[]>([])
+    const [locations, setLocations] = useState<LocationFull[]>([])
 
     useEffect(() => {
 
-        axios.post<{ locationsWithTypes: LocationWithTypes[] }>('/api/getLocations').then(res => {
-            setLocations(res.data.locationsWithTypes)
+        axios.post<{ locationsFull: LocationFull[] }>('/api/getLocations').then(res => {
+            setLocations(res.data.locationsFull)
         })
 
         if (navigator.geolocation) {
@@ -51,33 +68,6 @@ const GeolocationMap = () => {
         }
     }, []);
 
-    const LocationPicker = () => {
-        const markers = locations.map(location => ({
-            id: location.id,
-            lat: location.lat,
-            lng: location.long,
-            title: location.name
-        }))
-
-
-        return (
-
-            <>
-                {markers.map(marker => (
-                    <Marker
-                        key={marker.id}
-                        position={[marker.lat, marker.lng]}
-                        icon={Pin}
-                    >
-                        <Popup maxHeight={300} minWidth={450}>
-                            <Location id={marker.id} />
-                        </Popup>
-                    </Marker>
-                ))}
-            </>
-        )
-    }
-
     return (
         <>
             {latitude && longitude ? (
@@ -94,7 +84,7 @@ const GeolocationMap = () => {
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         />
-                        <LocationPicker />
+                        <RegisteredLocations locations={locations} />
                     </MapContainer>
                 </>
             ) : (

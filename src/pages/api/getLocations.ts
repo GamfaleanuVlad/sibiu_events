@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { db } from '~/server/db';
+import { LocationFull, getFullLocations } from '~/types';
 import { toErrorWithMessage } from '~/utils/errors';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -11,12 +11,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
-        const locationsWithTypes = await db.location.findMany({
-            include:{
-                eventTypes: true
-            }
-        })
-        res.status(200).json({ locationsWithTypes: locationsWithTypes })
+        const locationsFull : LocationFull[] = await getFullLocations()
+        res.status(200).json({ locationsFull: locationsFull })
 
     } catch (error) {
         res.status(500).send(toErrorWithMessage(error));

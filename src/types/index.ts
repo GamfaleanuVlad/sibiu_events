@@ -9,9 +9,16 @@ const eventWithFull = Prisma.validator<Prisma.EventDefaultArgs>()({
     }
 })
 
+const eventSimple = Prisma.validator<Prisma.EventDefaultArgs>()({})
+
 const locationWithFull = Prisma.validator<Prisma.LocationDefaultArgs>()({
     include: {
-        Event: true,
+        Event: {
+            include: {
+                location: true,
+                creator: true
+            }
+        },
         Action : true,
         eventTypes: true
     }
@@ -26,6 +33,7 @@ const locationWithTypes = Prisma.validator<Prisma.LocationDefaultArgs>()({
 
 
 export type EventFull = Prisma.EventGetPayload<typeof eventWithFull>
+export type EventSimple = Prisma.EventGetPayload<typeof eventSimple>
 export type LocationFull = Prisma.LocationGetPayload<typeof locationWithFull>
 export type LocationSimple = Prisma.LocationGetPayload<typeof locationSimple>
 export type LocationWithTypes = Prisma.LocationGetPayload<typeof locationWithTypes>
@@ -38,12 +46,28 @@ export const getFullEvent = async (conditions?: Prisma.EventWhereInput): Promise
     return event
 }
 
+export const getSimpleEvent = async (conditions?: Prisma.EventWhereInput): Promise<EventSimple | null> => {
+    const event = (await db.event.findFirst({
+        ...(conditions && { where: conditions }),
+        ...eventSimple
+    }))
+    return event
+}
+
 export const getFullLocation = async (conditions?: Prisma.LocationWhereInput): Promise<LocationFull | null> => {
     const location = (await db.location.findFirst({
         ...(conditions && { where: conditions }),
         ...locationWithFull
     }))
     return location
+}
+
+export const getFullLocations = async (conditions?: Prisma.LocationWhereInput): Promise<LocationFull[]> => {
+    const locations = (await db.location.findMany({
+        ...(conditions && { where: conditions }),
+        ...locationWithFull
+    }))
+    return locations
 }
 
 export const getSimpleLocation = async (conditions?: Prisma.LocationWhereInput): Promise<LocationSimple | null> => {
