@@ -10,14 +10,18 @@ export default async function handler(req:NextApiRequest, res:NextApiResponse) {
         return
     }
 
+    console.log(req.body);
+    
+
     const eventSimple : EventSimple = await db.event.create({
         data:{
             name: req.body.name,
-            date: req.body.startDate,
+            date: req.body.date,
             maxPers: req.body.maxPers,
             price: req.body.price,
             locationId: req.body.locationId,
-            userId: req.body.creatorId,
+            eventTypeId: req.body.eventTypeId,
+            creatorId: req.body.creatorId,
         }
     })
 

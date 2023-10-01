@@ -14,7 +14,8 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { LocationFull, LocationWithTypes } from '~/types';
+import { EventFull, EventSimple, EventTypeSimple } from '~/types';
+import EmojiDisplay from './EmojiDisplay';
 
 interface ExpandMoreProps extends IconButtonProps {
     expand: boolean;
@@ -31,7 +32,7 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
     }),
 }));
 
-export default function LocationCard( { location }: {location: LocationFull}) {
+export default function TypeCard({ type }: { type: EventTypeSimple }) {
     const [expanded, setExpanded] = React.useState(false);
 
     const handleExpandClick = () => {
@@ -41,41 +42,18 @@ export default function LocationCard( { location }: {location: LocationFull}) {
     return (
         <Card sx={{ maxWidth: 400, width: 400, boxShadow: 3 }}>
             <CardHeader
-                title={location.name}
-                subheader={location.address}
+                avatar={
+                    <Avatar sx={{ bgcolor: red[500] }}>
+                        <EmojiDisplay unicodeString={type.icon} />
+                    </Avatar>
+                }
+                action={
+                    <IconButton aria-label="settings">
+                        <MoreVertIcon />
+                    </IconButton>
+                }
+                title={type.text}
             />
-            <CardMedia
-                component="img"
-                height="194"
-                image={location.image}
-                alt="Paella dish"
-            />
-
-            <CardActions disableSpacing>
-                <IconButton aria-label="add to favorites">
-                    <FavoriteIcon />
-                </IconButton>
-                <IconButton aria-label="share">
-                    <ShareIcon />
-                </IconButton>
-                <ExpandMore
-                    expand={expanded}
-                    onClick={handleExpandClick}
-                    aria-expanded={expanded}
-                    aria-label="show more"
-                >
-                    <ExpandMoreIcon />
-                </ExpandMore>
-            </CardActions>
-            <Collapse in={expanded} timeout="auto" unmountOnExit>
-                <CardContent>
-                    {
-                        location.EvenTypeLocation.map((type) => (
-                            <Typography paragraph>{type.eventType.text}</Typography>
-                        ))
-                    }
-                </CardContent>
-            </Collapse>
         </Card>
     );
 }

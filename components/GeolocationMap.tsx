@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, createRef, Ref } from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -11,12 +11,7 @@ import { LocationFull } from '~/types';
 import axios from 'axios';
 
 
-export interface GeolocationBiref {
-    coordonates?: { lat: number | null, lng: number | null }
-    setCoordonates?: (lat: number, lng: number) => void
-}
-
-const RegisteredLocations = ({locations} : {locations: LocationFull[]}) => {
+const RegisteredLocations = ({ map, locations, openPopup, showTypes }: { map: React.RefObject<L.Map>, locations: LocationFull[], showTypes?: boolean, openPopup: number }) => {
     const Pin = L.icon({
         iconRetinaUrl: iconRetina.src,
         iconUrl: iconUrl.src,
@@ -24,26 +19,39 @@ const RegisteredLocations = ({locations} : {locations: LocationFull[]}) => {
         iconAnchor: [12, 40]
     });
 
+    const popupRefs = useRef(locations.map(() => React.createRef<L.Popup>()));
+    useEffect(() => {
+        if (openPopup >= 0) {
+            popupRefs.current[openPopup]?.current?.openOn(map!.current!)
+        }
+    }, [openPopup])
+
     return (
         <>
-            {locations.map(location => (
-                <Marker
-                    key={location.id}
-                    position={[location.lat, location.long]}
-                    icon={Pin}
-                >
-                    <Popup maxHeight={300} minWidth={450}>
-                        <Location location={location} />
-                    </Popup>
-                </Marker>
-            ))}
+            {locations.map((location, index) => {
+                return (
+                    <Marker
+                        key={location.id}
+                        position={[location.lat, location.long]}
+                        icon={Pin}
+                    >
+                        <Popup ref={popupRefs.current[index]} maxHeight={700} minWidth={450}>
+                            <Location location={location} showTypes={showTypes} />
+                        </Popup>
+                    </Marker>
+                )
+            })
+            }
         </>
     )
 }
 
-const GeolocationMap = () => {
+
+const CreationMap = ({ selectedLocationId, showTypes }: { selectedLocationId?: string, showTypes?: boolean }) => {
     const [latitude, setLatitude] = useState<number | null>(null);
     const [longitude, setLongitude] = useState<number | null>(null);
+    const [selectedLocationIndex, setSelectedLocationIndex] = useState<number>(-1)
+    const mapRef = useRef<L.Map>(null);
 
     const [locations, setLocations] = useState<LocationFull[]>([])
 
@@ -68,11 +76,23 @@ const GeolocationMap = () => {
         }
     }, []);
 
+
+    useEffect(() => {
+        if (selectedLocationId) {
+            const locationIndex = locations.findIndex(l => l.id === selectedLocationId)
+            if (locationIndex !== -1 && mapRef.current) {
+                mapRef.current.flyTo([locations[locationIndex]!.lat + 0.02, locations[locationIndex]!.long], 13)
+                setSelectedLocationIndex(locationIndex)
+            }
+        }
+    }, [selectedLocationId])
+
     return (
         <>
             {latitude && longitude ? (
                 <>
                     <MapContainer
+                        ref={mapRef}
                         center={[latitude, longitude]}
                         zoom={13}
                         scrollWheelZoom
@@ -84,7 +104,11 @@ const GeolocationMap = () => {
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         />
-                        <RegisteredLocations locations={locations} />
+                        <RegisteredLocations
+                            map={mapRef}
+                            locations={locations}
+                            showTypes={showTypes}
+                            openPopup={selectedLocationIndex} />
                     </MapContainer>
                 </>
             ) : (
@@ -94,4 +118,4 @@ const GeolocationMap = () => {
     );
 };
 
-export default GeolocationMap;
+export default CreationMap;

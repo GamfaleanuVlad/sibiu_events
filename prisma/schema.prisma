@@ -81,26 +81,27 @@ model VerificationToken {
 }
 
 model Location {
-    id      String  @id @default(cuid())
+    id      String @id @default(cuid())
     name    String
     address String
     long    Float
     lat     Float
     image   String
 
-    eventTypes EventType[]
-    Event      Event[]
-    Action     Action[]
+    Event            Event[]
+    Action           Action[]
+    EvenTypeLocation EvenTypeLocation[]
 }
 
 model EventType {
-    id       String  @id @default(cuid())
-    text     String
-    icon     String
-    isIndoor Boolean
+    id              String  @id @default(cuid())
+    text            String
+    icon            String
+    isIndoor        Boolean
+    avarageDuration Float   @default(0.5)
 
-    Location   Location? @relation(fields: [locationId], references: [id])
-    locationId String?
+    Event            Event[]
+    EvenTypeLocation EvenTypeLocation[]
 }
 
 model Event {
@@ -110,10 +111,12 @@ model Event {
     maxPers Int
     price   Float
 
-    location   Location @relation(fields: [locationId], references: [id])
-    creator    User     @relation(fields: [userId], references: [id])
-    locationId String
-    userId     String
+    eventType   EventType @relation(fields: [eventTypeId], references: [id])
+    location    Location  @relation(fields: [locationId], references: [id])
+    creator     User      @relation(fields: [creatorId], references: [id])
+    locationId  String
+    creatorId   String
+    eventTypeId String
 }
 
 model Action {
@@ -128,4 +131,12 @@ model Action {
     userId     String
     locationId String
     targetId   String
+}
+
+model EvenTypeLocation {
+    eventType   EventType @relation(fields: [eventTypeId], references: [id])
+    location    Location  @relation(fields: [locationId], references: [id])
+    eventTypeId String
+    locationId  String
+    @@unique([eventTypeId,locationId])
 }

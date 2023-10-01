@@ -1,10 +1,11 @@
 import EventCard from './EventCard'
 import LocationCard from './LocationCard'
-import {  LocationFull } from '~/types'
+import { LocationFull } from '~/types'
+import TypeCard from './TypeCard'
 
 
 
-const Location = ({ location }: {location: LocationFull}) => {
+const Location = ({ location, showTypes }: { location: LocationFull, showTypes?: boolean }) => {
 
     return (
         <div style={{
@@ -18,9 +19,15 @@ const Location = ({ location }: {location: LocationFull}) => {
         }}>
             <LocationCard location={location} />
             {
-                location.Event.map(event => (
-                    <EventCard key={event.id} event={event} />
-                ))
+                !showTypes
+                    ?
+                    location.Event.map(event => (
+                        <EventCard key={event.id} event={event} />
+                    ))
+                    :
+                    location.EvenTypeLocation.map(type => (
+                        <TypeCard key={type.eventType.id} type={type.eventType} />
+                    ))
             }
 
         </div>

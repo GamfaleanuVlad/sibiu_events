@@ -1,3 +1,4 @@
+import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -5,20 +6,35 @@ import Select from '@mui/material/Select';
 import Slider from '@mui/material/Slider';
 import TextField from '@mui/material/TextField';
 import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
-import Menu from 'components/Menu';
+import axios from 'axios';
+import EmojiDisplay from 'components/EmojiDisplay';
 import dayjs from 'dayjs';
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
+import { EventSimple, LocationFull } from '~/types';
 
-/*
-            name: req.body.name,
-            date: req.body.startDate,
-            maxPers: req.body.maxPers,
-            price: req.body.price,
-*/
+const DynamicCreationnMap = dynamic(import('../../components/GeolocationMap'), { ssr: false })
+
 export default function CreateEvent() {
 
-    const [cheta, setCheta] = useState<number>();
-    const [age, setAge] = useState<number>();
+    const [eventToAdd, setEventToAdd] = useState<Omit<EventSimple, 'id'>>({
+        name: '',
+        date: new Date(),
+        maxPers: 0,
+        price: 0,
+        locationId: '',
+        creatorId: '0',
+        eventTypeId: '',
+    })
+
+    const [locations, setLocations] = useState<LocationFull[]>([]);
+    const [selectedLocation, setSelectedLocation] = useState<LocationFull>();
+
+    useState(() => {
+        axios.post<{ locationsFull: LocationFull[] }>('/api/getLocations').then(res => {
+            setLocations(res.data.locationsFull)
+        })
+    })
 
     const marks = [
         {
@@ -48,53 +64,118 @@ export default function CreateEvent() {
 
 
     return (
-        <div className='flex flex-col h-[100vh] w-[100vw]  justify-center items-center'>
-            <div className='flex flex-col justify-center items-center w-56 gap-2'>
-                <TextField id='outlined-basic' label='Name' variant='standard' />
-                <MobileDateTimePicker defaultValue={dayjs()} />
+        <div className='flex flex-row h-[100vh] w-[100vw] justify-center items-center gap-10'>
+            <div className='flex flex-col justify-center items-center m-10 w-[16rem] gap-2'>
+                <TextField
+                    label='Name'
+                    variant='standard'
+                    value={eventToAdd?.name}
+                    onChange={(e) => {
+                        setEventToAdd(prev => { return { ...prev, name: e.target.value } });
+                    }} />
+                <InputLabel>Date</InputLabel>
+                <MobileDateTimePicker
+                    defaultValue={dayjs()}
+                    value={dayjs(eventToAdd.date)}
+                    onChange={(e) => {
+                        setEventToAdd(prev => { return { ...prev, date: e?.toDate() ?? new Date() } })
+                    }} />
+                <InputLabel>Max number of persons</InputLabel>
                 <Slider
                     aria-label='Restricted values'
-                    defaultValue={2}
                     valueLabelFormat={valueLabelFormat}
                     step={null}
                     valueLabelDisplay='auto'
                     marks={marks}
+                    value={eventToAdd.maxPers}
+                    onChange={(e, value) => {
+                        setEventToAdd(prev => { return { ...prev, maxPers: value as number } });
+                    }}
                 />
+                <InputLabel>Aproximate entry fee</InputLabel>
                 <TextField
                     id="outlined-number"
-                    label="Chetă"
+                    label="Fee"
                     type="number"
-                    value={cheta}
+                    value={eventToAdd.price}
                     onChange={(e) => {
                         var value = parseInt(e.target.value, 10);
 
                         if (value > 50) value = 50;
                         if (value < 0) value = 0;
 
-                        setCheta(value);
+                        setEventToAdd(prev => { return { ...prev, price: value } });
                     }}
                     variant='standard'
                 />
                 <FormControl fullWidth>
-
-                    <InputLabel id="demo-simple-select-label">Type</InputLabel>
+                    <InputLabel id="demo-simple-select-label">Location</InputLabel>
                     <Select
                         className='w-full'
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
-                        value={age}
-                        label="Age"
+                        value={selectedLocation?.id}
+                        label="Location"
                         onChange={(e) => {
-                            setAge(parseInt(e.target.value.toString()))
+                            setSelectedLocation(locations.find(l => l.id === e.target.value));
+                            setEventToAdd(prev => { return { ...prev, locationId: e.target.value } });
                         }}
                     >
-                        <MenuItem value={10}>Ten</MenuItem>
-                        <MenuItem value={20}>Twenty</MenuItem>
-                        <MenuItem value={30}>Thirty</MenuItem>
+                        {
+                            locations.map(l => (
+                                <MenuItem key={l.id} value={l.id}>{l.name}</MenuItem>
+                            ))
+                        }
                     </Select>
                 </FormControl>
+                <FormControl fullWidth >
+                    <InputLabel id="demo-simple-select-label">Type</InputLabel>
+                    <Select
+                        disabled={!selectedLocation}
+                        className='flex w-full'
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={eventToAdd.eventTypeId}
+                        label="Location"
+                        onChange={(e) => {
+                            setEventToAdd(prev => { return { ...prev, eventTypeId: e.target.value } });
+                        }}
+                    >
+                        {
+                            selectedLocation?.EvenTypeLocation.map(type => (
+                                <MenuItem key={type.eventType.id} value={type.eventType.id} >
+                                    <div className='flex gap-2'>
+                                        <EmojiDisplay unicodeString={type.eventType.icon} />
+                                        {type.eventType.text}
+                                    </div>
+                                </MenuItem>
+                            ))
+                        }
+                    </Select>
+                </FormControl>
+                <Button
+                    variant='contained'
+                    className='text-black hover:text-gray-100'
+                    onClick={async () => {
+                        void await axios.post('/api/createEvent', {...eventToAdd, maxPers:valueLabelFormat(eventToAdd.maxPers)});
+                        setEventToAdd({
+                            name: '',
+                            date: new Date(),
+                            maxPers: 0,
+                            price: 0,
+                            locationId: '',
+                            creatorId: '0',
+                            eventTypeId: '',
+                        });
+                        setSelectedLocation(undefined);
+                    }}
+                >
+                    Create
+                </Button>
             </div>
-            <Menu></Menu>
+            <div className='flex justify-center items-center w-[70%] h-[90vh] rounded-xl overflow-hidden'>
+                <DynamicCreationnMap selectedLocationId={selectedLocation?.id} showTypes={true}  />
+            </div>
         </div>
     );
 }

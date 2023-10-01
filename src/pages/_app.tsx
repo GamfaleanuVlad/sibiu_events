@@ -4,6 +4,7 @@ import { type AppType } from "next/app";
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import "~/styles/globals.css";
+import Menu from "components/Menu";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -12,7 +13,10 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <SessionProvider session={session}>
-        <Component {...pageProps} />
+        <div className='flex flex-col justify-center items-center h-[100vh] '>
+          <Component {...pageProps} />
+          <Menu />
+        </div>
       </SessionProvider>
     </LocalizationProvider>
   );
