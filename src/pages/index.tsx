@@ -9,7 +9,7 @@ export default function Home() {
 
   return (
     <>
-      <div className='flex justify-center items-center w-[100vw] h-[100vh]'>
+      <div className='flex justify-center items-center'>
 
         <div className='flex flex-row justify-center items-center w-[90vw] h-[90vh] my-auto rounded-xl overflow-hidden '>
           <DynamicGeoLocationMap />

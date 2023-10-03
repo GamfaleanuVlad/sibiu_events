@@ -66,10 +66,10 @@ model User {
 
     accounts Account[]
     sessions Session[]
-    Event    Event[]
 
-    Target  Action[] @relation("target")
-    Creator Action[] @relation("creator")
+    EventsCreated    Event[]
+    ActionTarget  Action[] @relation("target")
+    ActionCreator Action[] @relation("creator")
 }
 
 model VerificationToken {

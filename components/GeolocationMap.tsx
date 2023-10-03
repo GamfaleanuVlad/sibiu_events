@@ -35,7 +35,7 @@ const RegisteredLocations = ({ map, locations, openPopup, showTypes }: { map: Re
                         position={[location.lat, location.long]}
                         icon={Pin}
                     >
-                        <Popup ref={popupRefs.current[index]} maxHeight={700} minWidth={450}>
+                        <Popup ref={popupRefs.current[index]} maxHeight={700} minWidth={400}>
                             <Location location={location} showTypes={showTypes} />
                         </Popup>
                     </Marker>

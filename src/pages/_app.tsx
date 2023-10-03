@@ -13,7 +13,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <SessionProvider session={session}>
-        <div className='flex flex-col justify-center items-center h-[100vh] '>
+        <div className='flex flex-col justify-center items-center min-h-[100vh] max-w-[100vw] overflow-hidden'>
           <Component {...pageProps} />
           <Menu />
         </div>

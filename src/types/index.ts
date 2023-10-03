@@ -41,6 +41,16 @@ const locationWithTypes = Prisma.validator<Prisma.LocationDefaultArgs>()({
 
 const eventTypeSimple = Prisma.validator<Prisma.EventTypeDefaultArgs>()({})
 
+const userFull = Prisma.validator<Prisma.UserDefaultArgs>()({
+    include: {
+        EventsCreated:{
+            include:{
+                eventType:true,
+                location:true
+            }
+        }
+    }
+})
 
 export type EventFull = Prisma.EventGetPayload<typeof eventWithFull>
 export type EventSimple = Prisma.EventGetPayload<typeof eventSimple>
@@ -48,6 +58,7 @@ export type LocationFull = Prisma.LocationGetPayload<typeof locationWithFull>
 export type LocationSimple = Prisma.LocationGetPayload<typeof locationSimple>
 export type LocationWithTypes = Prisma.LocationGetPayload<typeof locationWithTypes>
 export type EventTypeSimple = Prisma.EventTypeGetPayload<typeof eventTypeSimple>
+export type UserFull = Prisma.UserGetPayload<typeof userFull>
 
 export const getFullEvent = async (conditions?: Prisma.EventWhereInput): Promise<EventFull | null> => {
     const event = (await db.event.findFirst({
@@ -127,4 +138,20 @@ export const getSimpleEventTypes = async (conditions?: Prisma.EventTypeWhereInpu
         ...eventTypeSimple
     }))
     return eventTypes
+}
+
+export const getFullUser = async (conditions?: Prisma.UserWhereInput): Promise<UserFull | null> => {
+    const user = (await db.user.findFirst({
+        ...(conditions && { where: conditions }),
+        ...userFull
+    }))
+    return user
+}
+
+export const getFullUsers = async (conditions?: Prisma.UserWhereInput): Promise<UserFull[]> => {
+    const users = (await db.user.findMany({
+        ...(conditions && { where: conditions }),
+        ...userFull
+    }))
+    return users
 }

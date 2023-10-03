@@ -6,12 +6,10 @@ import EventCard from 'components/EventCard';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react'
 import { EventFull } from '~/types';
-import Fuse from 'fuse.js'
+import MiniSearch from 'minisearch'
 
 function FindEvent() {
-    const fuseOptions: Fuse.IFuseOptions<EventFull> = {
-        keys: ['name', 'location.name', 'eventType.text']
-    }
+
 
     const [searchCriteria, setSearchCriteria] = useState<{
         text: string,
@@ -26,21 +24,34 @@ function FindEvent() {
     })
 
     const [events, setEvents] = useState<EventFull[]>([])
-    const [fuse, setFuse] = useState<Fuse<EventFull>>()
-    
+    const [minisearch, setMinisearch] = useState<MiniSearch<EventFull>>()
+
     useEffect(() => {
         axios.post<{ eventsFull: EventFull[] }>('/api/getEvents', searchCriteria).then(res => {
             setEvents(res.data.eventsFull)
+            let miniSearch = new MiniSearch<EventFull>({
+                fields: ['name'],
+                storeFields: ['id'],
+                searchOptions:{
+                    fuzzy:3
+                }
+            })
+            miniSearch?.addAll(res.data.eventsFull)
+            setMinisearch(miniSearch)
         })
-    })
+    }, [])
 
     useEffect(() => {
-        setFuse(new Fuse<EventFull>(events, fuseOptions))
-    }, [events])
+        console.log(minisearch?.documentCount);
+        
+        console.log(minisearch?.search(searchCriteria.text));
+        
+    }, [searchCriteria])
+
 
     return (
         <div>
-            <div>
+            <div className='flex flex-row gap-2'>
                 <TextField
                     label='Search...'
                     variant='standard'
@@ -48,38 +59,47 @@ function FindEvent() {
                     onChange={(e) => {
                         setSearchCriteria(prev => { return { ...prev, text: e.target.value } });
                     }} />
-                <InputLabel>Date</InputLabel>
-                <MobileDateTimePicker
-                    defaultValue={dayjs()}
-                    value={dayjs(searchCriteria.date)}
-                    onChange={(e) => {
-                        setSearchCriteria(prev => { return { ...prev, date: e?.toDate() ?? new Date() } })
-                    }} />
+                <div>
+                    <InputLabel>Date</InputLabel>
+                    <MobileDateTimePicker
+                        defaultValue={dayjs()}
+                        value={dayjs(searchCriteria.date)}
+                        onChange={(e) => {
+                            setSearchCriteria(prev => { return { ...prev, date: e?.toDate() ?? new Date() } })
+                        }} />
+                </div>
+                <div>
+                    
+                </div>
             </div>
-            <div className='flex flex-col min-h-screen'>
+            <div className='flex flex-col gap-2'>
+
                 {
-                    fuse
-                        ?.search(searchCriteria.text)
-                        .filter(fuseItem => {
+                    (
+                        searchCriteria.text.length > 0
+                            ? events.filter(event => minisearch?.search(searchCriteria.text).some(item => item.id === event.id))
+                            : [...events]
+                    )
+                        .filter(searchItem => {
                             if (searchCriteria.indoor !== null) {
-                                return fuseItem.item.eventType.isIndoor === searchCriteria.indoor
+                                return searchItem.eventType.isIndoor === searchCriteria.indoor
                             }
                             return true
                         })
-                        .filter(fuseItem => {
+                        .filter(searchItem => {
                             if (searchCriteria.fee !== null) {
-                                return fuseItem.item.price === searchCriteria.fee
+                                return searchItem.price === searchCriteria.fee
                             }
                             return true
                         })
-                        .filter(fuseItem => {
+                        .filter(searchItem => {
                             if (searchCriteria.date !== null) {
-                                return dayjs(fuseItem.item.date).isAfter(searchCriteria.date)
+                                return dayjs(searchItem.date).isAfter(searchCriteria.date)
                             }
                             return true
                         })
-                        .map(fuseItem => (
-                            <EventCard key={fuseItem.item.id} event={fuseItem.item} />
+                        .map(searchItem => (
+                            <EventCard key={searchItem.id} event={searchItem} />
                         ))}
             </div>
         </div>

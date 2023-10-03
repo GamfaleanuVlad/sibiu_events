@@ -13,6 +13,7 @@ import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import EventCard from './EventCard';
 import { useRouter } from 'next/router';
+import Grid from '@mui/material/Grid';
 
 export default function AccountMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -23,22 +24,22 @@ export default function AccountMenu() {
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
-  
+
   const handleClose = () => {
     setAnchorEl(null);
   };
 
   return (
     <>
-      <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-        <MenuItem onClick={() => void router.push("/")}>Map</MenuItem>
-        <MenuItem onClick={() => void router.push("/find_event")}>Find event</MenuItem>
-        <MenuItem onClick={() => void router.push("/create_event")}>Create event</MenuItem>
-        <MenuItem onClick={() => void router.push("/create_review")}>Review</MenuItem>
-        <MenuItem onClick={() => void router.push("/report")}>Report</MenuItem>
-        <MenuItem onClick={() => void router.push("/support")}>Support</MenuItem>
-        <MenuItem onClick={() => void router.push("/about")}>About</MenuItem>
-      </Box>
+      <div className='flex flex-wrap gap-2 pb-5 px-3 pt-2'>
+        <div onClick={() => void router.push("/")}>Map</div>
+        <div onClick={() => void router.push("/find_event")}>Find event</div>
+        <div onClick={() => void router.push("/create_event")}>Create event</div>
+        <div onClick={() => void router.push("/create_review")}>Review</div>
+        <div onClick={() => void router.push("/report")}>Report</div>
+        <div onClick={() => void router.push("/support")}>Support</div>
+        <div onClick={() => void router.push("/about")}>About</div>
+      </div>
     </>
   );
 }

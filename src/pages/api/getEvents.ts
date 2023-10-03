@@ -11,8 +11,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
-        const locationsFull : EventFull[] = await getFullEvents()
-        res.status(200).json({ locationsFull: locationsFull })
+        const eventsFull : EventFull[] = await getFullEvents()
+        res.status(200).json({ eventsFull: eventsFull })
 
     } catch (error) {
         res.status(500).send(toErrorWithMessage(error));

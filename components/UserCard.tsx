@@ -14,9 +14,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { EventFull, EventSimple } from '~/types';
-import EmojiDisplay from './EmojiDisplay';
-import dayjs from 'dayjs';
+import { UserFull } from '~/types';
 
 interface ExpandMoreProps extends IconButtonProps {
     expand: boolean;
@@ -33,7 +31,7 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
     }),
 }));
 
-export default function EventCard({ event }: { event: EventFull }) {
+export default function UserCard( { user }: {user: UserFull}) {
     const [expanded, setExpanded] = React.useState(false);
 
     const handleExpandClick = () => {
@@ -43,26 +41,15 @@ export default function EventCard({ event }: { event: EventFull }) {
     return (
         <Card sx={{ maxWidth: 400, width: 400, boxShadow: 3 }}>
             <CardHeader
-                avatar={
-                    <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                        <EmojiDisplay unicodeString={event.eventType.icon} />
-                    </Avatar>
-                }
-                action={
-                    <IconButton aria-label="settings">
-                        <MoreVertIcon />
-                    </IconButton>
-                }
-                title={event.eventType.text}
-                subheader={event.location.name}
+                title={user.name}
+            />
+            <CardMedia
+                component="img"
+                height="194"
+                image={user.image ?? ''}
+                alt="Paella dish"
             />
 
-            <CardContent>
-                <Typography variant="body2" color="text.secondary" className='flex flex-col'>
-                    <div>On: {dayjs(event.date).format('dddd, DD MMM')}</div>
-                    <div>At: {dayjs(event.date).format('hh:mm a')}</div>
-                </Typography>
-            </CardContent>
             <CardActions disableSpacing>
                 <IconButton aria-label="add to favorites">
                     <FavoriteIcon />
@@ -81,8 +68,9 @@ export default function EventCard({ event }: { event: EventFull }) {
             </CardActions>
             <Collapse in={expanded} timeout="auto" unmountOnExit>
                 <CardContent>
-                    <Typography paragraph>Creator:</Typography>
-                   
+                    <Typography paragraph>
+                        {user.email}
+                    </Typography>
                 </CardContent>
             </Collapse>
         </Card>

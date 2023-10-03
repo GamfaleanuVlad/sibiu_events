@@ -64,7 +64,7 @@ export default function CreateEvent() {
 
 
     return (
-        <div className='flex flex-row h-[100vh] w-[100vw] justify-center items-center gap-10'>
+        <div className='flex flex-col md:flex-row w-[100vw] justify-center items-center gap-10'>
             <div className='flex flex-col justify-center items-center m-10 w-[16rem] gap-2'>
                 <TextField
                     label='Name'
@@ -173,7 +173,7 @@ export default function CreateEvent() {
                     Create
                 </Button>
             </div>
-            <div className='flex justify-center items-center w-[70%] h-[90vh] rounded-xl overflow-hidden'>
+            <div className='flex justify-center items-center w-[90vw] md:w-[70%] h-[60rem] md:h-[90vh] rounded-xl overflow-hidden'>
                 <DynamicCreationnMap selectedLocationId={selectedLocation?.id} showTypes={true}  />
             </div>
         </div>
