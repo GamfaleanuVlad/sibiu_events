@@ -6,7 +6,12 @@ const eventWithFull = Prisma.validator<Prisma.EventDefaultArgs>()({
     include: {
         location: true,
         creator: true,
-        eventType: true
+        eventType: true,
+        Action:{
+            include:{
+                creator:true
+            }
+        }
     }
 })
 const eventSimple = Prisma.validator<Prisma.EventDefaultArgs>()({})
@@ -17,7 +22,12 @@ const locationWithFull = Prisma.validator<Prisma.LocationDefaultArgs>()({
             include: {
                 location: true,
                 creator: true,
-                eventType: true
+                eventType: true,
+                Action:{
+                    include:{
+                        creator:true
+                    }
+                }
             }
         },
         Action : true,

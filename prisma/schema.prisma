@@ -15,6 +15,7 @@ datasource db {
 }
 
 enum ActionType {
+    register
     review
     report
     block
@@ -62,12 +63,12 @@ model User {
     email         String?   @unique
     emailVerified DateTime?
     image         String?
-    isAdmim       Boolean
+    isAdmim       Boolean   @default(false)
 
     accounts Account[]
     sessions Session[]
 
-    EventsCreated    Event[]
+    EventsCreated Event[]
     ActionTarget  Action[] @relation("target")
     ActionCreator Action[] @relation("creator")
 }
@@ -117,20 +118,23 @@ model Event {
     locationId  String
     creatorId   String
     eventTypeId String
+    Action      Action[]
 }
 
 model Action {
     id   String     @id @default(cuid())
     type ActionType
-    text String
+    text String?
 
-    target User @relation("target", fields: [targetId], references: [id])
+    targetUser  User?  @relation("target", fields: [targetUserId], references: [id])
+    targetEvent Event? @relation(fields: [targetEventId], references: [id])
 
-    location   Location @relation(fields: [locationId], references: [id])
-    creator    User     @relation("creator", fields: [userId], references: [id])
-    userId     String
-    locationId String
-    targetId   String
+    location      Location? @relation(fields: [locationId], references: [id])
+    creator       User?     @relation("creator", fields: [creatorId], references: [id])
+    creatorId     String?
+    locationId    String?
+    targetUserId  String?
+    targetEventId String?
 }
 
 model EvenTypeLocation {
@@ -138,5 +142,6 @@ model EvenTypeLocation {
     location    Location  @relation(fields: [locationId], references: [id])
     eventTypeId String
     locationId  String
-    @@unique([eventTypeId,locationId])
+
+    @@unique([eventTypeId, locationId])
 }
