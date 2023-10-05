@@ -9,15 +9,14 @@ import iconShadow from "leaflet/dist/images/marker-shadow.png"
 import Location from './Location';
 import { LocationFull } from '~/types';
 import axios from 'axios';
+import {BasketballIcon, FootballIcon, TennisIcon, DanceIcon, BeerIcon, TheaterIcon} from './CustomPins/Custom_pins';
+
 
 
 const RegisteredLocations = ({ map, locations, openPopup, showTypes }: { map: React.RefObject<L.Map>, locations: LocationFull[], showTypes?: boolean, openPopup: number }) => {
-    const Pin = L.icon({
-        iconRetinaUrl: iconRetina.src,
-        iconUrl: iconUrl.src,
-        shadowUrl: iconShadow.src,
-        iconAnchor: [12, 40]
-    });
+
+
+    var greenIcon = new DanceIcon();
 
     const popupRefs = useRef(locations.map(() => React.createRef<L.Popup>()));
     useEffect(() => {
@@ -33,7 +32,7 @@ const RegisteredLocations = ({ map, locations, openPopup, showTypes }: { map: Re
                     <Marker
                         key={location.id}
                         position={[location.lat, location.long]}
-                        icon={Pin}
+                        icon={greenIcon}
                     >
                         <Popup ref={popupRefs.current[index]} maxHeight={700} minWidth={400}>
                             <Location location={location} showTypes={showTypes} />
