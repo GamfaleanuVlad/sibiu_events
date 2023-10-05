@@ -1,6 +1,7 @@
-import { Autocomplete, Box, Button, Card, Rating, TextField } from "@mui/material";
+import { Autocomplete, Box, Button, Card, CardContent, InputLabel, Rating, TextField, Typography } from "@mui/material";
 import * as React from "react";
 import axios from "axios";
+import { alignProperty } from "@mui/material/styles/cssUtils";
 
 export default function AddReview() {
     const [value, setValue] = React.useState(2);
@@ -45,62 +46,61 @@ export default function AddReview() {
         }
         return null;
     };
- 
-    function sendReview(){}
+
+    function sendReview() { }
 
     return (
-        <div className="review">
-
-            {/* De stilizat titlul paginii */}
-            <h1>Reviews page</h1>
+        <div className="review flex flex-col items-center justify-center">
+            <h1 className="mb-4 text-3xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-6xl">Reviews page</h1>
             <Card variant="outlined" sx={{ minWidth: 500 }}>
-                <Box
-                    sx={{
-                        "& > legend": { mt: 2 },
-                    }}
-                >
-                    <label>Choose the event</label>
-                    <Autocomplete
-                        disablePortal
-                        id="combo-box-demo"
-                        onChange={(event, selectedValue:any ) => setSelected(selectedValue)}
-                        // De adaugat evenimentele incheiate din baza de date
-                        options={options}
-                        sx={{ width: 300 }}
-                        renderInput={(params) => <TextField {...params} label="Event" />}
-                    />
-                    <label>
-                        Add your rating here
-                    </label>
-                    <br></br>
-                    <Rating
-                        name="simple-controlled"
-                        value={value}
-                        onChange={(event, newValue: any) => {
-                            setValue(newValue);
+                <CardContent>
+                    <Box
+                    className="flex flex-col"
+                        sx={{
+                            "& > legend": { mt: 2 },
                         }}
-                    />
-                    <br></br>
-                    <TextField
-                        id="filled-multiline-flexible"
-                        label="Describe your experience regarding the event"
-                        multiline
-                        variant="filled"
-                        style = {{width: 500}}
-                    />
-                </Box>
+                    >
+                        <InputLabel className="font-bold">Choose the event</InputLabel >
+                        <Autocomplete
+                        className="mb-5"
+                            disablePortal
+                            id="combo-box-demo"
+                            value={selected}
+                            onChange={(event, selectedValue: any) => setSelected(selectedValue)}
+                            options={options}
+                            sx={{ width: 300 }}
+                            renderInput={(params) => <TextField {...params} label="Event" />}
+                        />
+                        <InputLabel className="font-bold">
+                            Add your rating here
+                        </InputLabel>
+                        <Rating
+                            name="simple-controlled"
+                        className="mb-5"
+                            value={value}
+                            onChange={(event, newValue: any) => {
+                                setValue(newValue);
+                            }}
+                        />
+                        <InputLabel className="font-bold">Describe your experience regarding the event</InputLabel>
+                        <TextField
+                            id="filled-multiline-flexible"
+                            className="mb-5"
+                            multiline
+                            variant="filled"
+                            style={{ width: 500 }}
+                        />
+                        <InputLabel className="font-bold">Import image</InputLabel>
+                        <input 
+                        className="mb-5"
+                        type="file" onChange={(event) =>
+                            uploadFileWithRetry
+                        } />
+                        <img src={file} />
+                        <Button className="button-upload mb-4 self-center" variant="outlined" onClick={sendReview}>Send review!</Button>
+                    </Box>
+                </CardContent>
             </Card>
-
-
-            <div className="Image">
-                <h2>Add Image:</h2>
-                <input type="file" onChange={(event) =>
-                    uploadFileWithRetry // calling the handleChange function
-                } />
-                <img src={file} />
-            </div>
-
-            <Button variant="contained" onClick={sendReview}>Send review!</Button>
         </div>
     );
 }
