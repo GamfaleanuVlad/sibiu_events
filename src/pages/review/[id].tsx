@@ -1,4 +1,4 @@
-import { Autocomplete, Box, Button, Card, CardContent, InputLabel, Rating, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, Button, Card, CardContent, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, InputLabel, Rating, TextField, Typography } from "@mui/material";
 import * as React from "react";
 import axios from "axios";
 import { alignProperty } from "@mui/material/styles/cssUtils";
@@ -6,9 +6,12 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { uuid } from "uuidv4";
 import { EventFull } from "~/types";
+import { useRouter } from "next/router";
 
 export default function AddReview() {
 
+    const router = useRouter()
+    const { id } = router.query
     const { data: sessionData } = useSession();
 
     const [review, setReview] = useState<{
@@ -24,12 +27,19 @@ export default function AddReview() {
     })
 
     const [events, setEvents] = useState<EventFull[]>([])
+    const [openThanksDialog, setOpenThanksDialog] = useState(false);
 
     useEffect(() => {
-        axios.post<{ eventsFull: EventFull[] }>('/api/getEvents').then(res => {
+        void axios.post<{ eventsFull: EventFull[] }>('/api/getEvents').then(res => {
             setEvents(res.data.eventsFull)
         })
     }, [])
+
+    useEffect(() => {
+        if (id) {
+            setReview(prev => { return { ...prev, event: id as string } })
+        }
+    },[id])
 
     const submitReview = async () => {
 
@@ -54,15 +64,33 @@ export default function AddReview() {
             });
 
             if (result.status === 200) {
-                imagePublicPath = `/images/reviews/${uuid()}`
+                imagePublicPath = `images/reviews/${uuid()}`
 
-                imageBlurhash = (await axios.post<{ blurhash: string }>('/api/process/image', {
+                imageBlurhash = (await axios.post<{ blurHash: string }>('/api/process/image', {
                     sourcePath: `images/reviews/raw/${review.image.name}`,
                     targetPath: imagePublicPath
-                })).data.blurhash
+                })).data.blurHash
             }
         }
-        return null;
+
+        const result = await axios.post('/api/createReviewEvent', {
+            creatorId: sessionData?.user?.id,
+            targetEventId: review.event,
+            text: review.text,
+            rating: review.rating,
+            imagePublicUrl: imagePublicPath ?? '',
+            blurHash: imageBlurhash ?? '',
+        })
+
+        if (result.status === 200) {
+            setReview({
+                event: '',
+                text: '',
+                rating: 0,
+                image: null
+            })
+            setOpenThanksDialog(true)
+        }
     };
 
     return (
@@ -86,6 +114,7 @@ export default function AddReview() {
                                     onChange={(_, selectedValue) => {
                                         setReview({ ...review, event: selectedValue ?? '' });
                                     }}
+                                    getOptionLabel={(event) => events.find(e => e.id === event)?.name ?? ''}
                                     value={review.event}
                                     options={[...events.map(event => event.id)]}
                                     sx={{ width: 300 }}
@@ -102,24 +131,48 @@ export default function AddReview() {
                             onChange={(_, newValue) => {
                                 setReview({ ...review, rating: newValue ?? 0 });
                             }}
-                        
+
                         />
                         <InputLabel className="font-bold">Describe your experience regarding the event</InputLabel>
                         <TextField
-                             id="filled-multiline-flexible"
-                             label="Describe your experience regarding the event"
-                             multiline
-                             variant="filled"
-                             style={{ width: 500 }}
+                            id="filled-multiline-flexible"
+                            label="Describe your experience regarding the event"
+                            multiline
+                            variant="filled"
+                            value={review.text}
+                            onChange={(event) => {
+                                setReview({ ...review, text: event.target.value });
+                            }}
+                            style={{ width: 500 }}
                         />
                         <InputLabel className="font-bold">Import image</InputLabel>
                         <input type="file" onChange={(event) => { setReview({ ...review, image: event?.target?.files?.[0] ?? null }); }} />
 
                         {/* <img src={file} /> */}
-                        <Button className="button-upload mb-4 self-center" variant="outlined" onClick={() => submitReview()}>Send review!</Button>
+                        <Button className="button-upload mb-4 self-center" variant="outlined" onClick={() => void submitReview()}>Send review!</Button>
                     </Box>
                 </CardContent>
             </Card>
+            <Dialog
+                open={openThanksDialog}
+                onClose={() => setOpenThanksDialog(false)}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    Thank you!
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Thank you for your feedback!
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenThanksDialog(false)} autoFocus>
+                        Ok
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 }

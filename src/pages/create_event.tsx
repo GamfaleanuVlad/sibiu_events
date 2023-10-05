@@ -31,7 +31,7 @@ export default function CreateEvent() {
     const [selectedLocation, setSelectedLocation] = useState<LocationFull>();
 
     useState(() => {
-        axios.post<{ locationsFull: LocationFull[] }>('/api/getLocations').then(res => {
+        void axios.post<{ locationsFull: LocationFull[] }>('/api/getLocations').then(res => {
             setLocations(res.data.locationsFull)
         })
     })
@@ -86,7 +86,7 @@ export default function CreateEvent() {
     return (
         <div className='flex flex-col md:flex-row w-[100vw] justify-start items-center gap-10'>
             <div className='flex flex-col justify-start items-start m-10 w-[16rem] gap-2 '>
-            <h1 className="mb-6 text-3xl font-bold inline-block whitespace-nowrap rounded-[0.27rem] bg-green-300 ">CREATE AN EVENT </h1>
+                <h1 className="mb-6 text-3xl font-bold inline-block whitespace-nowrap rounded-[0.27rem] bg-green-300 ">CREATE AN EVENT </h1>
                 <TextField
                     label='Name'
                     variant='standard'
@@ -120,7 +120,7 @@ export default function CreateEvent() {
                     type="number"
                     value={eventToAdd.price}
                     onChange={(e) => {
-                        var value = parseInt(e.target.value, 10);
+                        let value = parseInt(e.target.value, 10);
 
                         if (value > 50) value = 50;
                         if (value < 0) value = 0;
@@ -174,29 +174,32 @@ export default function CreateEvent() {
                         }
                     </Select>
                 </FormControl>
-                <Button 
+                <Button
                     variant='contained'
                     className='text-black hover:text-gray-100  bg-neutral-300 self-center top-10 items-center'
-                    onClick={async () => {
-                        void await axios.post('/api/createEvent', {...eventToAdd, maxPers:valueLabelFormat(eventToAdd.maxPers)});
-                        setEventToAdd({
-                            name: '',
-                            date: new Date(),
-                            maxPers: 0,
-                            price: 0,
-                            locationId: '',
-                            creatorId: '0',
-                            eventTypeId: '',
-                        });
-                        setSelectedLocation(undefined);
+                    onClick={() => {
+                        void axios.post('/api/createEvent', { ...eventToAdd, maxPers: valueLabelFormat(eventToAdd.maxPers) }).then(res => {
+                            setEventToAdd({
+                                name: '',
+                                date: new Date(),
+                                maxPers: 0,
+                                price: 0,
+                                locationId: '',
+                                creatorId: '0',
+                                eventTypeId: '',
+                            })
+                            setSelectedLocation(undefined);
+                        }
+                        )
+
                     }}
                 >
                     Create
                 </Button>
             </div>
             <div className='flex justify-center items-center w-[90vw] md:w-[70%] h-[60rem] md:h-[90vh] rounded-xl overflow-hidden'>
-                <DynamicCreationnMap selectedLocationId={selectedLocation?.id} showTypes={true}  />
+                <DynamicCreationnMap selectedLocationId={selectedLocation?.id} showTypes={true} />
             </div>
-        </div>
+        </div >
     );
 }

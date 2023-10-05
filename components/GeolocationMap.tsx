@@ -16,12 +16,12 @@ import {BasketballIcon, FootballIcon, TennisIcon, DanceIcon, BeerIcon, TheaterIc
 const RegisteredLocations = ({ map, locations, openPopup, showTypes }: { map: React.RefObject<L.Map>, locations: LocationFull[], showTypes?: boolean, openPopup: number }) => {
 
 
-    var greenIcon = new DanceIcon();
+    const greenIcon = new DanceIcon();
 
     const popupRefs = useRef(locations.map(() => React.createRef<L.Popup>()));
     useEffect(() => {
         if (openPopup >= 0) {
-            popupRefs.current[openPopup]?.current?.openOn(map!.current!)
+            popupRefs.current[openPopup]?.current?.openOn(map.current!)
         }
     }, [openPopup])
 
@@ -56,7 +56,7 @@ const CreationMap = ({ selectedLocationId, showTypes }: { selectedLocationId?: s
 
     useEffect(() => {
 
-        axios.post<{ locationsFull: LocationFull[] }>('/api/getLocations').then(res => {
+        void axios.post<{ locationsFull: LocationFull[] }>('/api/getLocations').then(res => {
             setLocations(res.data.locationsFull)
         })
 

@@ -71,7 +71,7 @@ export default function LocationCard( { location }: {location: LocationFull}) {
                 <CardContent>
                     {
                         location.EvenTypeLocation.map((type) => (
-                            <Typography paragraph>{type.eventType.text}</Typography>
+                            <Typography key={type.eventType.id} paragraph>{type.eventType.text}</Typography>
                         ))
                     }
                 </CardContent>

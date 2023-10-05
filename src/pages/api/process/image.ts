@@ -8,16 +8,16 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 
-    if(req.method !== 'POST') {
+    if (req.method !== 'POST') {
         res.status(405).end()
         return
     }
 
-    const {sourcePath, targetPath} = req.body
+    const { sourcePath, targetPath } = req.body
 
     console.log(sourcePath);
     console.log(targetPath);
-    
+
 
     const dwCommand = new GetObjectCommand({ Bucket: env.R2_BUCKET_NAME, Key: sourcePath });
     const data = await r2.send(dwCommand)
@@ -28,13 +28,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const webpImage = await image.toFormat('webp').toBuffer();
 
-    const buf = await image.resize(16, 16, {fit:'fill'}).ensureAlpha().raw().toBuffer()
+    const buf = await image.resize(16, 16, { fit: 'fill' }).ensureAlpha().raw().toBuffer()
     const blurHash = encode(Uint8ClampedArray.from(buf), 16, 16, 4, 4)
 
-    new PutObjectCommand({
+
+
+    await r2.send(new PutObjectCommand({
         Bucket: env.R2_BUCKET_NAME,
-        Key: targetPath, ContentType: 'webp', ACL: 'public-read', Body: webpImage
-    })
+        Key: `${targetPath}.webp`, ContentType: 'webp', ACL: 'public-read', Body: webpImage
+    }));
 
     res.json({ blurHash: blurHash })
 }

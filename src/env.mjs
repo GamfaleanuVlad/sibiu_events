@@ -43,6 +43,8 @@ export const env = createEnv({
    */
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
+    NEXT_PUBLIC_R2_ID: z.string().min(1),
+    NEXT_PUBLIC_R2_ENDPOINT: z.string().min(1),
   },
 
   /**
@@ -60,6 +62,8 @@ export const env = createEnv({
     R2_ACCESS_ID: process.env.R2_ACCESS_ID,
     R2_SECRET_ACCESS_KEY: process.env.R2_SECRET_ACCESS_KEY,
     R2_BUCKET_NAME: process.env.R2_BUCKET_NAME,
+    NEXT_PUBLIC_R2_ID: process.env.NEXT_PUBLIC_R2_ID,
+    NEXT_PUBLIC_R2_ENDPOINT: process.env.NEXT_PUBLIC_R2_ENDPOINT,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

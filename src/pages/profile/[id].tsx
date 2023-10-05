@@ -11,9 +11,9 @@ import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
 
 function Profile() {
-    
+
     const router = useRouter()
-    const {id} = router.query
+    const { id } = router.query
     const { data: sessionData } = useSession();
 
     const [createdEvents, setCreatedEvents] = useState<EventFull[]>([])
@@ -24,17 +24,17 @@ function Profile() {
 
         const searchedId = (id as string) ?? (sessionData?.user?.id ?? '')
 
-        axios.post<{
+        void axios.post<{
             userEvents: {
                 createdEventsFull: EventFull[],
                 participatedEventsFull: ActionEvent[]
             }
-        }>('/api/getUserEvents', {creatorId: id ?? searchedId}).then(res => {
+        }>('/api/getUserEvents', { creatorId: id ?? searchedId }).then(res => {
             setCreatedEvents(res.data.userEvents.createdEventsFull)
             setParticipatedEvents(
                 res.data.userEvents.participatedEventsFull.map(
                     (action): EventFull => {
-                        
+
                         return {
                             creatorId: action.targetEvent?.creatorId ?? '',
                             date: action.targetEvent?.date ?? new Date(),
@@ -59,15 +59,16 @@ function Profile() {
                             },
                             name: action.targetEvent?.name ?? '',
                             id: action.targetEvent?.id ?? '',
+                            eventTypeId: action.targetEvent?.eventTypeId ?? '',
                             creator: action.targetEvent?.creator ?? {
                                 name: '',
                                 image: '',
                                 id: '',
                                 email: '',
+                                emailVerified: null,
                                 isAdmim: false,
-                                emailVerified: null
-                            },
-                            eventTypeId: action.targetEvent?.eventTypeId ?? '',
+                                EventsCreated: []
+                            }
                         }
                     }
                 )
@@ -90,7 +91,7 @@ function Profile() {
             <InputLabel>Participated Events</InputLabel>
             <div className='flex flex-col gap-2'>
                 {
-                    participatedEvents.map(event => {                        
+                    participatedEvents.map(event => {
                         return (
                             <EventCard key={event.id} event={event} />
                         )

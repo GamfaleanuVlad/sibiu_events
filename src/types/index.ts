@@ -5,7 +5,16 @@ import { db } from "~/server/db";
 const eventWithFull = Prisma.validator<Prisma.EventDefaultArgs>()({
     include: {
         location: true,
-        creator: true,
+        creator: {
+            include: {
+                EventsCreated: {
+                    include: {
+                        eventType: true,
+                        location: true
+                    }
+                }
+            }
+        },
         eventType: true,
         Action: {
             include: {
@@ -21,7 +30,16 @@ const locationWithFull = Prisma.validator<Prisma.LocationDefaultArgs>()({
         Event: {
             include: {
                 location: true,
-                creator: true,
+                creator: {
+                    include: {
+                        EventsCreated: {
+                            include: {
+                                eventType: true,
+                                location: true
+                            }
+                        }
+                    }
+                },
                 eventType: true,
                 Action: {
                     include: {
@@ -89,8 +107,8 @@ export type ActionFull = Prisma.ActionGetPayload<typeof actionFull>
 export type ActionEvent = Prisma.ActionGetPayload<typeof actionEvent>
 
 
-export const getFullEvent = async (conditions?: Prisma.EventWhereInput): Promise<EventFull | null> => {
-    const event = (await db.event.findFirst({
+export const getFullEvent = async (conditions: Prisma.EventWhereUniqueInput): Promise<EventFull | null> => {
+    const event = (await db.event.findUnique({
         ...(conditions && { where: conditions }),
         ...eventWithFull
     }))

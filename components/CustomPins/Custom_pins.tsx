@@ -7,7 +7,7 @@ import DancePin from "public/static/images/Pins/Dance.png"
 import TheaterPin from "public/static/images/Pins/Theater.png"
 import BeerPin from "public/static/images/Pins/Beer.png"
 
-export var  FootballIcon = L.Icon.extend({
+export const  FootballIcon = L.Icon.extend({
     options: {
         iconUrl: foootballPin.src,
         shadowUrl: shadowPin.src,
@@ -19,7 +19,7 @@ export var  FootballIcon = L.Icon.extend({
     }
 });
 
-export var  BasketballIcon = L.Icon.extend({
+export const  BasketballIcon = L.Icon.extend({
     options: {
         iconUrl: BasketballPin.src,
         shadowUrl: shadowPin.src,
@@ -31,7 +31,7 @@ export var  BasketballIcon = L.Icon.extend({
     }
 });
 
-export var  TennisIcon = L.Icon.extend({
+export const  TennisIcon = L.Icon.extend({
     options: {
         iconUrl: TennisPin.src,
         shadowUrl: shadowPin.src,
@@ -43,7 +43,7 @@ export var  TennisIcon = L.Icon.extend({
     }
 });
 
-export var  DanceIcon = L.Icon.extend({
+export const  DanceIcon = L.Icon.extend({
     options: {
         iconUrl: DancePin.src,
         shadowUrl: shadowPin.src,
@@ -55,7 +55,7 @@ export var  DanceIcon = L.Icon.extend({
     }
 });
 
-export var  TheaterIcon = L.Icon.extend({
+export const  TheaterIcon = L.Icon.extend({
     options: {
         iconUrl: TheaterPin.src,
         shadowUrl: shadowPin.src,
@@ -67,7 +67,7 @@ export var  TheaterIcon = L.Icon.extend({
     }
 });
 
-export var  BeerIcon = L.Icon.extend({
+export const  BeerIcon = L.Icon.extend({
     options: {
         iconUrl: BeerPin.src,
         shadowUrl: shadowPin.src,
