@@ -35,6 +35,10 @@ export default function AccountMenu() {
         <div onClick={() => void router.push("/")}>Map</div>
         <div onClick={() => void router.push("/find_event")}>Find event</div>
         <div onClick={() => void router.push("/create_event")}>Create event</div>
+        <div onClick={() => void router.push("/about")}>AboutPage</div>
+        <div onClick={() => void router.push("/review/{id}")}>Add review</div>
+        <div onClick={() => void router.push("/about")}>About</div>
+        <div onClick={() => void router.push("/support")}>Support</div>
       </div>
     </>
   );

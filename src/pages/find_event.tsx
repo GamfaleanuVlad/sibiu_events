@@ -27,7 +27,7 @@ function FindEvent() {
     const [minisearch, setMinisearch] = useState<MiniSearch<EventFull>>()
 
     useEffect(() => {
-        axios.post<{ eventsFull: EventFull[] }>('/api/getEvents', searchCriteria).then(res => {
+        axios.post<{ eventsFull: EventFull[] }>('/api/getEvents').then(res => {
             setEvents(res.data.eventsFull)
             let miniSearch = new MiniSearch<EventFull>({
                 fields: ['name'],
