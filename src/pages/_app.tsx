@@ -15,6 +15,8 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <SessionProvider session={session}>
         <div className='flex flex-col justify-center items-center min-h-[100vh] max-w-[100vw] overflow-hidden'>
           <Component {...pageProps} />
+        </div>
+        <div className="absolute top-[20px] left-[40px] sm:top-[30px] sm:left-[30px]">
           <Menu />
         </div>
       </SessionProvider>
