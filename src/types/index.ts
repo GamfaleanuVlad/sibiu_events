@@ -7,9 +7,9 @@ const eventWithFull = Prisma.validator<Prisma.EventDefaultArgs>()({
         location: true,
         creator: true,
         eventType: true,
-        Action:{
-            include:{
-                creator:true
+        Action: {
+            include: {
+                creator: true
             }
         }
     }
@@ -23,17 +23,17 @@ const locationWithFull = Prisma.validator<Prisma.LocationDefaultArgs>()({
                 location: true,
                 creator: true,
                 eventType: true,
-                Action:{
-                    include:{
-                        creator:true
+                Action: {
+                    include: {
+                        creator: true
                     }
                 }
             }
         },
-        Action : true,
-        EvenTypeLocation:{
-            include:{
-                eventType:true
+        Action: true,
+        EvenTypeLocation: {
+            include: {
+                eventType: true
             }
         }
     }
@@ -41,9 +41,9 @@ const locationWithFull = Prisma.validator<Prisma.LocationDefaultArgs>()({
 const locationSimple = Prisma.validator<Prisma.LocationDefaultArgs>()({})
 const locationWithTypes = Prisma.validator<Prisma.LocationDefaultArgs>()({
     include: {
-        EvenTypeLocation:{
-            include:{
-                eventType:true
+        EvenTypeLocation: {
+            include: {
+                eventType: true
             }
         }
     }
@@ -53,12 +53,28 @@ const eventTypeSimple = Prisma.validator<Prisma.EventTypeDefaultArgs>()({})
 
 const userFull = Prisma.validator<Prisma.UserDefaultArgs>()({
     include: {
-        EventsCreated:{
-            include:{
-                eventType:true,
-                location:true
+        EventsCreated: {
+            include: {
+                eventType: true,
+                location: true
             }
         }
+    }
+})
+
+const actionFull = Prisma.validator<Prisma.ActionDefaultArgs>()({
+    include: {
+        creator: true,
+        targetEvent: true,
+        location: true,
+        targetUser: true,
+    }
+})
+
+const actionEvent = Prisma.validator<Prisma.ActionDefaultArgs>()({
+    include: {
+        creator: true,
+        targetEvent: eventWithFull
     }
 })
 
@@ -69,6 +85,9 @@ export type LocationSimple = Prisma.LocationGetPayload<typeof locationSimple>
 export type LocationWithTypes = Prisma.LocationGetPayload<typeof locationWithTypes>
 export type EventTypeSimple = Prisma.EventTypeGetPayload<typeof eventTypeSimple>
 export type UserFull = Prisma.UserGetPayload<typeof userFull>
+export type ActionFull = Prisma.ActionGetPayload<typeof actionFull>
+export type ActionEvent = Prisma.ActionGetPayload<typeof actionEvent>
+
 
 export const getFullEvent = async (conditions?: Prisma.EventWhereInput): Promise<EventFull | null> => {
     const event = (await db.event.findFirst({
@@ -164,4 +183,36 @@ export const getFullUsers = async (conditions?: Prisma.UserWhereInput): Promise<
         ...userFull
     }))
     return users
+}
+
+export const getActionFull = async (conditions?: Prisma.ActionWhereInput): Promise<ActionFull | null> => {
+    const action = (await db.action.findFirst({
+        ...(conditions && { where: conditions }),
+        ...actionFull
+    }))
+    return action
+}
+
+export const getActionsFull = async (conditions?: Prisma.ActionWhereInput): Promise<ActionFull[]> => {
+    const actions = (await db.action.findMany({
+        ...(conditions && { where: conditions }),
+        ...actionFull
+    }))
+    return actions
+}
+
+export const getActionEvent = async (conditions?: Prisma.ActionWhereInput): Promise<ActionEvent | null> => {
+    const action = (await db.action.findFirst({
+        ...(conditions && { where: conditions }),
+        ...actionEvent
+    }))
+    return action
+}
+
+export const getActionsEvent = async (conditions?: Prisma.ActionWhereInput): Promise<ActionEvent[]> => {
+    const actions = (await db.action.findMany({
+        ...(conditions && { where: conditions }),
+        ...actionEvent
+    }))
+    return actions
 }
