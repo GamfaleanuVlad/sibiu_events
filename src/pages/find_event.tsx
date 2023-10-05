@@ -32,8 +32,8 @@ function FindEvent() {
             let miniSearch = new MiniSearch<EventFull>({
                 fields: ['name'],
                 storeFields: ['id'],
-                searchOptions:{
-                    fuzzy:3
+                searchOptions: {
+                    fuzzy: 3
                 }
             })
             miniSearch?.addAll(res.data.eventsFull)
@@ -43,15 +43,16 @@ function FindEvent() {
 
     useEffect(() => {
         console.log(minisearch?.documentCount);
-        
+
         console.log(minisearch?.search(searchCriteria.text));
-        
+
     }, [searchCriteria])
 
 
     return (
-        <div>
-            <div className='flex flex-row gap-2'>
+        <div className='flex flex-row gap-4'>
+            <div className='flex flex-col gap-2'>
+                <h1 className="mb-6 text-3xl font-bold inline-block whitespace-nowrap rounded-[0.27rem] bg-green-300 ">FIND AN EVENT</h1>
                 <TextField
                     label='Search...'
                     variant='standard'
@@ -60,7 +61,7 @@ function FindEvent() {
                         setSearchCriteria(prev => { return { ...prev, text: e.target.value } });
                     }} />
                 <div>
-                    <InputLabel>Date</InputLabel>
+                    <InputLabel className='font-bold italic underline'>Date:</InputLabel>
                     <MobileDateTimePicker
                         defaultValue={dayjs()}
                         value={dayjs(searchCriteria.date)}
@@ -69,10 +70,10 @@ function FindEvent() {
                         }} />
                 </div>
                 <div>
-                    
+
                 </div>
             </div>
-            <div className='flex flex-col gap-2'>
+            <div className='grid gap-4 grid-cols-4 grid-rows-3'>
 
                 {
                     (

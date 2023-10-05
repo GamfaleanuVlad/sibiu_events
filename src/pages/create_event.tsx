@@ -42,20 +42,40 @@ export default function CreateEvent() {
             label: '1',
         },
         {
-            value: 25,
+            value: 10,
             label: '2',
         },
         {
-            value: 50,
+            value: 20,
             label: '3',
         },
         {
-            value: 75,
+            value: 30,
             label: '4',
         },
         {
-            value: 100,
+            value: 40,
             label: '5',
+        },
+        {
+            value: 50,
+            label: '6',
+        },
+        {
+            value: 60,
+            label: '7',
+        },
+        {
+            value: 70,
+            label: '8',
+        },
+        {
+            value: 80,
+            label: '9',
+        },
+        {
+            value: 90,
+            label: '10',
         },
     ];
     const valueLabelFormat = (value: number) => {
@@ -64,8 +84,9 @@ export default function CreateEvent() {
 
 
     return (
-        <div className='flex flex-col md:flex-row w-[100vw] justify-center items-center gap-10'>
-            <div className='flex flex-col justify-center items-center m-10 w-[16rem] gap-2'>
+        <div className='flex flex-col md:flex-row w-[100vw] justify-start items-center gap-10'>
+            <div className='flex flex-col justify-start items-start m-10 w-[16rem] gap-2 '>
+            <h1 className="mb-6 text-3xl font-bold inline-block whitespace-nowrap rounded-[0.27rem] bg-green-300 ">CREATE AN EVENT </h1>
                 <TextField
                     label='Name'
                     variant='standard'
@@ -73,14 +94,14 @@ export default function CreateEvent() {
                     onChange={(e) => {
                         setEventToAdd(prev => { return { ...prev, name: e.target.value } });
                     }} />
-                <InputLabel>Date</InputLabel>
+                <InputLabel className='font-semibold italic underline'>Date:</InputLabel>
                 <MobileDateTimePicker
                     defaultValue={dayjs()}
                     value={dayjs(eventToAdd.date)}
                     onChange={(e) => {
                         setEventToAdd(prev => { return { ...prev, date: e?.toDate() ?? new Date() } })
                     }} />
-                <InputLabel>Max number of persons</InputLabel>
+                <InputLabel className='font-bold italic underline '>Max number of persons:</InputLabel>
                 <Slider
                     aria-label='Restricted values'
                     valueLabelFormat={valueLabelFormat}
@@ -92,7 +113,7 @@ export default function CreateEvent() {
                         setEventToAdd(prev => { return { ...prev, maxPers: value as number } });
                     }}
                 />
-                <InputLabel>Aproximate entry fee</InputLabel>
+                <InputLabel className='font-bold italic underline ' >Aproximate entry fee: </InputLabel>
                 <TextField
                     id="outlined-number"
                     label="Fee"
@@ -153,9 +174,9 @@ export default function CreateEvent() {
                         }
                     </Select>
                 </FormControl>
-                <Button
+                <Button 
                     variant='contained'
-                    className='text-black hover:text-gray-100'
+                    className='text-black hover:text-gray-100  bg-neutral-300 self-center top-10 items-center'
                     onClick={async () => {
                         void await axios.post('/api/createEvent', {...eventToAdd, maxPers:valueLabelFormat(eventToAdd.maxPers)});
                         setEventToAdd({
