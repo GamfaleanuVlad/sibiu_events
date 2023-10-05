@@ -1,26 +1,41 @@
 import { Action } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '~/server/db';
+import { Review } from '~/types/action';
 
-export default async function handler(req:NextApiRequest, res:NextApiResponse) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 
 
-    if(req.method !== 'POST') {
+    if (req.method !== 'POST') {
         res.status(405).end()
         return
     }
 
-    console.log(req.body);
-    
+    const {
+        creatorId,
+        targetEventId,
+        text,
+        rating,
+        imagePublicUrl,
+        blurHash, } = req.body
 
-    const action : Action = await db.action.create({
-        data:{
+    const actionObj: Review = {
+        rating: rating,
+        text: text,
+        imagePublicUrl: imagePublicUrl,
+        imageBlurHash: blurHash
+    }
+
+    const actionJSON = JSON.stringify(actionObj)
+
+    const action: Action = await db.action.create({
+        data: {
             type: 'review',
-            creatorId: req.body.creatorId,
-            targetEventId: req.body.targetEventId,
-            text: req.body.text,
+            creatorId: creatorId,
+            targetEventId: targetEventId,
+            text: actionJSON,
         }
     })
 
-    res.status(200).json({action:action})
+    res.status(200).json({ action: action })
 }

@@ -1,7 +1,8 @@
 export interface Review {
     text:string,
     rating:number,
-    imageUrl?:string
+    imagePublicUrl?:string,
+    imageBlurHash?:string,
 }
 
 export interface Report {
