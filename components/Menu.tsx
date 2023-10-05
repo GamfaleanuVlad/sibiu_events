@@ -20,16 +20,12 @@ export default function AccountMenu() {
       onClick : () => void router.push("/create_event")
     },
     {
-      label:'Add review',
-      onClick : () => void router.push("/review/{id}")
+      label:'Profile',
+      onClick : () => void router.push("/profile")
     },
     {
       label:'About',
       onClick : () => void router.push("/about")
-    },
-    {
-      label:'Support',
-      onClick : () => void router.push("/support")
     },
 
   ];

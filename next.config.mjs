@@ -18,7 +18,7 @@ const config = {
     defaultLocale: "en",
   },
   images: {
-    domains: ['r2.unbreak.ro'],
+    domains: ['r2.unbreak.ro', 'lh3.googleusercontent.com'],
   },
 };
 

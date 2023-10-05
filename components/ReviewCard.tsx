@@ -58,15 +58,28 @@ export default function ReviewCard({ action }: { action: ActionEvent }) {
 
             />
             <CardContent >
-                <Rating
-                    name="simple-controlled"
-                    value={review.rating}
-                />
-                <div className='flex w-full h-full bg-slate-100 rounded p-2'>
-                    <Typography paragraph>
-                        {review.text}
-                    </Typography>
-                </div>
+                {
+                    (review.rating && review.rating > 0) ?
+                        <Rating
+                            readOnly 
+                            name="simple-controlled"
+                            value={review.rating}
+                        />
+                        :
+                        <></>
+                }
+                {
+                    (review.text && review.text.length > 0) ?
+                        <div className='flex w-full h-full bg-slate-100 rounded p-2'>
+                            <Typography paragraph>
+                                {review.text}
+                            </Typography>
+                        </div>
+                        :
+                        <div className='flex w-full h-full bg-slate-100 rounded p-2'>
+                            Attended this event
+                        </div>
+                }
             </CardContent>
             {
                 review.imagePublicUrl && review.imagePublicUrl.length > 0 &&

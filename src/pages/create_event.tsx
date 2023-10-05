@@ -1,3 +1,4 @@
+import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
@@ -9,13 +10,16 @@ import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
 import axios from 'axios';
 import EmojiDisplay from 'components/EmojiDisplay';
 import dayjs from 'dayjs';
+import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { EventSimple, LocationFull } from '~/types';
 
 const DynamicCreationnMap = dynamic(import('../../components/GeolocationMap'), { ssr: false })
 
 export default function CreateEvent() {
+
+    const { data: sessionData } = useSession();
 
     const [eventToAdd, setEventToAdd] = useState<Omit<EventSimple, 'id'>>({
         name: '',
@@ -29,12 +33,22 @@ export default function CreateEvent() {
 
     const [locations, setLocations] = useState<LocationFull[]>([]);
     const [selectedLocation, setSelectedLocation] = useState<LocationFull>();
+    const [showLoginDialog, setShowLoginDialog] = useState(false);
+    const [showCreatedDialog, setShowCreatedDialog] = useState(false);
+
 
     useState(() => {
         void axios.post<{ locationsFull: LocationFull[] }>('/api/getLocations').then(res => {
             setLocations(res.data.locationsFull)
         })
     })
+
+    useEffect(() => {
+        if (sessionData?.user?.id) {
+            setEventToAdd(prev => { return { ...prev, creatorId: sessionData?.user?.id } })
+        }
+
+    }, [sessionData])
 
     const marks = [
         {
@@ -178,20 +192,25 @@ export default function CreateEvent() {
                     variant='contained'
                     className='text-black hover:text-gray-100  bg-neutral-300 self-center top-10 items-center'
                     onClick={() => {
-                        void axios.post('/api/createEvent', { ...eventToAdd, maxPers: valueLabelFormat(eventToAdd.maxPers) }).then(res => {
-                            setEventToAdd({
-                                name: '',
-                                date: new Date(),
-                                maxPers: 0,
-                                price: 0,
-                                locationId: '',
-                                creatorId: '0',
-                                eventTypeId: '',
-                            })
-                            setSelectedLocation(undefined);
+                        if (sessionData?.user.id) {
+                            void axios.post('/api/createEvent', { ...eventToAdd, maxPers: valueLabelFormat(eventToAdd.maxPers) }).then(res => {
+                                setEventToAdd({
+                                    name: '',
+                                    date: new Date(),
+                                    maxPers: 0,
+                                    price: 0,
+                                    locationId: '',
+                                    creatorId: '0',
+                                    eventTypeId: '',
+                                })
+                                setSelectedLocation(undefined);
+                                setShowCreatedDialog(true);
+                            }
+                            )
                         }
-                        )
-
+                        else {
+                            setShowLoginDialog(true);
+                        }
                     }}
                 >
                     Create
@@ -200,6 +219,46 @@ export default function CreateEvent() {
             <div className='flex justify-center items-center w-[90vw] md:w-[70%] h-[60rem] md:h-[90vh] rounded-xl overflow-hidden'>
                 <DynamicCreationnMap selectedLocationId={selectedLocation?.id} showTypes={true} />
             </div>
+            <Dialog
+                open={showLoginDialog}
+                onClose={() => setShowLoginDialog(false)}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    Account Required
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Please Login.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setShowLoginDialog(false)} autoFocus>
+                        Ok
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={showCreatedDialog}
+                onClose={() => setShowCreatedDialog(false)}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    Event Created.
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Event Created with Success.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setShowCreatedDialog(false)} autoFocus>
+                        Ok
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </div >
     );
 }

@@ -47,7 +47,8 @@ const EventPage = () => {
             )}
             <div className='flex flex-col gap-4'>
                 <Button
-                    variant='contained'
+                    variant='outlined'
+                    color='info'
                     onClick={() => { void router.push(`/review/${event?.id}`) }}>
                     Add Review
                 </Button>

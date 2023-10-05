@@ -9,6 +9,8 @@ import { ActionEvent, EventFull } from '~/types';
 import MiniSearch from 'minisearch'
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
+import Rating from '@mui/material/Rating';
+import { Review } from '~/types/action';
 
 function Profile() {
 
@@ -18,18 +20,19 @@ function Profile() {
 
     const [createdEvents, setCreatedEvents] = useState<EventFull[]>([])
     const [participatedEvents, setParticipatedEvents] = useState<EventFull[]>([])
+    const [userRating, setUserRating] = useState<number>(0)
 
 
     useEffect(() => {
 
-        const searchedId = (id as string) ?? (sessionData?.user?.id ?? '')
+        const searchedId = (id?.[0] as string) ?? (sessionData?.user?.id ?? '')
 
         void axios.post<{
             userEvents: {
                 createdEventsFull: EventFull[],
                 participatedEventsFull: ActionEvent[]
             }
-        }>('/api/getUserEvents', { creatorId: id ?? searchedId }).then(res => {
+        }>('/api/getUserEvents', { creatorId: searchedId }).then(res => {
             setCreatedEvents(res.data.userEvents.createdEventsFull)
             setParticipatedEvents(
                 res.data.userEvents.participatedEventsFull.map(
@@ -73,11 +76,27 @@ function Profile() {
                     }
                 )
             )
+            let ratingValues = 0
+            let ratingCount = 0
+            res.data.userEvents.createdEventsFull.forEach(event => {
+                event.Action.filter(action => action.type === 'review').forEach(action => {
+                    const review = JSON.parse(action.text ?? "{}") as Review
+                    ratingValues += review.rating ?? 0
+                    ratingCount += review.rating ? 1 : 0
+                })
+            })
+            setUserRating(ratingValues / ratingCount)
         })
     }, [sessionData])
 
     return (
         <div>
+            <InputLabel>Organizer Rating</InputLabel>
+            <Rating
+                readOnly
+                name="simple-controlled"
+                value={userRating}
+            />
             <InputLabel>Created Events</InputLabel>
             <div className='flex flex-col gap-2'>
                 {
