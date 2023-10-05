@@ -37,11 +37,12 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
     }),
 }));
 
-export default function EventCard({ event, showActions = true }: { event: EventFull, showActions?: boolean }) {
+export default function EventCard({ event, showActions = true } : { event: EventFull, showActions?: boolean }) {
 
     const router = useRouter()
     const [expanded, setExpanded] = useState(false);
     const { data: sessionData } = useSession();
+    const [attendingAdd, setAttendingAdd] = useState(0);
 
 
     const handleExpandClick = () => {
@@ -72,7 +73,7 @@ export default function EventCard({ event, showActions = true }: { event: EventF
                 <Typography variant="body2" color="text.secondary" className='flex flex-col'>
                     <div>On: {dayjs(event.date).format('dddd, DD MMM')}</div>
                     <div>At: {dayjs(event.date).format('hh:mm a')}</div>
-                    <div>Attending: {event.Action.filter(action => action.type === 'register').length.toString()}</div>
+                    <div>Attending: {((event.Action.filter(action => action.type === 'register').length) + attendingAdd ).toString()}</div>
                 </Typography>
             </CardContent>
             {
@@ -85,6 +86,7 @@ export default function EventCard({ event, showActions = true }: { event: EventF
                                     creatorId: sessionData.user.id,
                                     targetEventId: event.id,
                                 })
+                                setAttendingAdd(attendingAdd + 1)
                             }
                         }} aria-label="register">
                             <AddIcon />

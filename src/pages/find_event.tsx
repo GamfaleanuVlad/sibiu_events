@@ -69,12 +69,8 @@ function FindEvent() {
                             setSearchCriteria(prev => { return { ...prev, date: e?.toDate() ?? new Date() } })
                         }} />
                 </div>
-                <div>
-
-                </div>
             </div>
-            <div className='grid gap-4 grid-cols-4 grid-rows-3'>
-
+            <div className='grid gap-4 grid-cols-4'>
                 {
                     (
                         searchCriteria.text.length > 0
